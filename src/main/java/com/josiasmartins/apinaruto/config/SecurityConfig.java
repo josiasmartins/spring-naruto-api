@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,13 +19,14 @@ import com.josiasmartins.apinaruto.security.jwt.JwtService;
 import com.josiasmartins.apinaruto.services.Impl.UsuarioServiceImpl;
 
 @EnableWebSecurity // implementa o @Configuration
-public class SecurityConfig {
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     // $2a$12$IFBpq3I3jec4FdfwTDzmGOCdGCCuySnCzKZbeElUFebvdHtD192v2
     // $2a$12$UhyS80bl0Eszdj4st9m/R.TpSNJI2c/hRSKna5t2VXd48zizuToPu
 
     @Autowired
     private UsuarioServiceImpl usuarioServiceImpl;
+    
     @Autowired
     private JwtService jwtService;
 
@@ -38,6 +40,7 @@ public class SecurityConfig {
         return new JwtAuthFilter(jwtService, usuarioServiceImpl);
     }
 
+    @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 
         auth
@@ -45,33 +48,33 @@ public class SecurityConfig {
                 .passwordEncoder(passwordEncoder());
     }
 
-    @Bean
+    @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable() // csrf: permite que aja um secuguranca entre uma aplicacao web e back
                 .authorizeRequests()
-                    .requestMatchers("/api/clientes/**")
+                    .antMatchers("/api/clientes/**")
     //                        .hasAnyAuthority("MANTER_USUARIO");
     //                    .authenticated()
     //                    .permitAll()
                         .hasAnyRole("USER", "ADMIN")
-                    .requestMatchers("/api/pedidos/**")
+                    .antMatchers("/api/pedidos/**")
                         .hasAnyRole("USER", "ADMIN")
-                    .requestMatchers("/api/produtos/**")
+                    .antMatchers("/api/produtos/**")
                         .hasRole("ADMIN")
 
-                    .requestMatchers(HttpMethod.POST, "/api/usuarios/**")
+                    .antMatchers(HttpMethod.POST, "/api/usuarios/**")
                         .permitAll()
                     .anyRequest().authenticated()
                 .and()
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // sem sessão
-                .and()
-                    .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); // sem sessão
+                // .and()
+                //     .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
-    @Bean
+    @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().requestMatchers(
+        web.ignoring().antMatchers(
                 "/v2/api-docs",
                 "/configuration/ui",
                 "/swagger-resources/**",
