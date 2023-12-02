@@ -1,5 +1,9 @@
 package com.josiasmartins.apinaruto.domain.DTOs;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

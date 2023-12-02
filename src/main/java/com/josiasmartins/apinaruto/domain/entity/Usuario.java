@@ -1,4 +1,4 @@
-package domain.entity;
+package com.josiasmartins.apinaruto.domain.entity;
 
 import javax.validation.constraints.NotEmpty;
 
