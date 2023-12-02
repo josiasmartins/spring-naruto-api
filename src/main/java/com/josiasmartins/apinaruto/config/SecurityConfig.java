@@ -67,9 +67,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .permitAll()
                     .anyRequest().authenticated()
                 .and()
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); // sem sessão
-                // .and()
-                //     .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // sem sessão   
+                .and()
+                    .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
+
+                // http.addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
     @Override
