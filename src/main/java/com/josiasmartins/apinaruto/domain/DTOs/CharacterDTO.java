@@ -14,6 +14,6 @@ public class CharacterDTO {
 
     private String name;
     private String clan;
-    private List<String> elements;
+    private String elements;
     
 }
